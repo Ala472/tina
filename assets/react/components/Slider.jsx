@@ -26,7 +26,7 @@ export default function Slider() {
 
     if (slides.length === 0) {
         return (
-            <Loader />
+            <p>waiting</p>
         );
     }
 
