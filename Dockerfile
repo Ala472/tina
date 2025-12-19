@@ -1,18 +1,22 @@
-FROM php:8.2-fpm-alpine
-
-# 1. Installer les libs système (zip, git, etc.)
-RUN apk add --no-cache git unzip libzip-dev
-
-# 2. Installer les extensions PHP
-RUN docker-php-ext-install zip pdo_mysql
-
-# 3. INSTALLER COMPOSER (La ligne qui vous manquait)
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-
-WORKDIR /var/www
-
-# 4. Copier les fichiers
+# Node build
+FROM node:20 AS node_build
+WORKDIR /app
+COPY package.json package-lock.json* ./
+RUN npm install --legacy-peer-deps
 COPY . .
+RUN npm run build
 
-# 5. Lancer composer
-RUN composer install --no-dev --optimize-autoloader --no-scripts
+# PHP
+FROM php:8.2-apache
+WORKDIR /app
+
+RUN docker-php-ext-install pdo pdo_mysql
+
+COPY --from=node_build /app /app
+
+RUN composer install --no-dev --optimize-autoloader
+
+ENV APP_ENV=prod
+ENV APP_DEBUG=0
+
+EXPOSE 80
