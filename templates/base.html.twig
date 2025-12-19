@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Tina Moteur - Official Website{% endblock %}</title>
+    <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}" />
+    {{ encore_entry_link_tags('react_app') }}
+</head>
+<body>
+    <div id="root"></div>
+    {{ encore_entry_script_tags('react_app') }}
+</body>
+</html>

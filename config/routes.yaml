@@ -1,0 +1,32 @@
+# 1. Routes de vos Contrôleurs API (si vous en avez)
+# (Si vous utilisez ApiPlatform, elles sont déjà gérées)
+controllers:
+    resource:
+        path: ../src/Controller/
+        namespace: App\Controller
+    type: attribute
+    
+# 2. Router Admin React
+admin_app:
+    path: /admin/{reactRouting}
+    controller: App\Controller\AdminController::index
+    requirements:
+        reactRouting: ".*"
+
+# 3. Router Front React (Le Catch-All)
+# config/routes.yaml
+
+# ... (Routes API ou imports de routes API) ...
+
+# Front React router
+app_react:
+    # ➡️ Modifiez le pattern pour exclure explicitement /api
+    path: /{reactRouting}
+    controller: App\Controller\ReactController::index
+    requirements:
+        # ➡️ Capture tout SAUF ce qui commence par 'api/'
+        reactRouting: '^(?!api\/).*'
+    
+# Si le 'condition' n'est pas supporté (dépend de la version de Symfony), 
+# vous pouvez utiliser une expression plus simple mais moins puissante :
+# defaults: { _fragment: null, _locale: null } # Assurez-vous que cela n'interfère pas

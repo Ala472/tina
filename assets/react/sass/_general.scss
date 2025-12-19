@@ -1,0 +1,21 @@
+@use "mixin" as *;
+
+.container{
+  width:100%;
+  margin-right: auto;
+  margin-left: auto;
+  padding-left: 15px;
+  padding-right:15px;
+  @include min-width(sm){
+    max-width:540px;
+  }
+  @include min-width(md){
+    max-width:720px;
+  }
+  @include min-width(lg){
+    max-width:960px;
+  }
+  @include min-width(xl){
+    max-width:1140px;
+  }
+}

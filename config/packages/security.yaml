@@ -1,0 +1,42 @@
+# config/packages/security.yaml
+
+security:
+    password_hashers:
+        Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
+
+    providers:
+        app_user_provider:
+            entity:
+                class: App\Entity\User
+                property: email
+
+    firewalls:
+        # 1. Firewall pour la connexion (Doit rester en premier)
+        login:
+            pattern: ^/api/login_check
+            stateless: true
+            json_login:
+                check_path: /api/login_check
+                username_path: email
+                password_path: password
+                success_handler: lexik_jwt_authentication.handler.authentication_success
+                failure_handler: lexik_jwt_authentication.handler.authentication_failure
+
+        # 2. Firewall pour toutes les autres requêtes API protégées par JWT
+        api:
+            pattern: ^/api # ⬅️ Capture toutes les autres routes /api/*
+            stateless: true
+            jwt: ~
+            
+        # 3. ❌ SUPPRIMER LE FIREWALL 'main' ou lui donner un pattern très spécifique s'il est nécessaire ailleurs.
+
+    access_control:
+        # La connexion doit être publique
+        - { path: ^/api/login_check, roles: PUBLIC_ACCESS } 
+        
+        # Le reste de l'API doit être authentifié (jwt est vérifié par le firewall 'api')
+        - { path: ^/api, roles: PUBLIC_ACCESS } 
+        
+        # Les routes admin sont optionnelles ici car déjà couvertes par la ligne précédente 
+        # (seul le front-end utilise /admin, l'API utilise /api/*)
+        # ❌ Ligne inutile pour une API pure : - { path: ^/admin, roles: ROLE_ADMIN }
