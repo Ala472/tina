@@ -1,24 +1,18 @@
-FROM php:8.2-apache
+FROM php:8.2-fpm-alpine
 
-WORKDIR /app
+# 1. Installer les libs système (zip, git, etc.)
+RUN apk add --no-cache git unzip libzip-dev
 
-# PHP extensions
-RUN docker-php-ext-install pdo pdo_mysql
+# 2. Installer les extensions PHP
+RUN docker-php-ext-install zip pdo_mysql
 
-# Node
-RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
- && apt-get install -y nodejs
+# 3. INSTALLER COMPOSER (La ligne qui vous manquait)
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Copy files
+WORKDIR /var/www
+
+# 4. Copier les fichiers
 COPY . .
 
-# Install PHP deps
-RUN composer install --no-dev --optimize-autoloader
-
-# Build assets
-RUN npm install && npm run build
-
-# Permissions
-RUN chown -R www-data:www-data var public
-
-EXPOSE 80
+# 5. Lancer composer
+RUN composer install --no-dev --optimize-autoloader --no-scripts
